@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AREFIM - Gestion Centralisée</title>
+    <!-- Tailwind CSS pour un design pro et rapide -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome pour les icônes -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --primary: #0f172a; /* Navy Slate */
+            --accent: #2563eb;  /* Blue AREFIM */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+            color: #1e293b;
+        }
+
+        .sidebar-link.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid #60a5fa;
+            color: white;
+        }
+
+        /* Scrollbar personnalisée */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        /* Animation de transition */
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); position: fixed; z-index: 50; height: 100%; }
+            .sidebar.open { transform: translateX(0); }
+        }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="sidebar w-64 bg-slate-900 text-slate-300 flex-shrink-0 flex flex-col transition-transform duration-300 ease-in-out">
+        <div class="p-6 flex flex-col items-center border-b border-slate-800">
+            <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center text-white text-2xl font-bold mb-2">A</div>
+            <h1 class="text-xl font-bold text-white tracking-tight">AREFIM</h1>
+            <p class="text-[10px] uppercase tracking-[0.2em] text-blue-400 font-semibold">Inclusion Sociale</p>
+        </div>
+        
+        <nav class="flex-1 mt-4 overflow-y-auto overflow-x-hidden text-sm">
+            <a href="#" onclick="navigate('dashboard')" class="sidebar-link flex items-center px-6 py-3.5 hover:text-white transition" data-nav="dashboard">
+                <i class="fas fa-th-large w-5 mr-3"></i> Tableau de Bord
+            </a>
+            <a href="#" onclick="navigate('projects')" class="sidebar-link flex items-center px-6 py-3.5 hover:text-white transition" data-nav="projects">
+                <i class="fas fa-briefcase w-5 mr-3"></i> Projets (GCP)
+            </a>
+            <a href="#" onclick="navigate('beneficiaries')" class="sidebar-link flex items-center px-6 py-3.5 hover:text-white transition" data-nav="beneficiaries">
+                <i class="fas fa-user-group w-5 mr-3"></i> Bénéficiaires
+            </a>
+            <a href="#" onclick="navigate('hr')" class="sidebar-link flex items-center px-6 py-3.5 hover:text-white transition" data-nav="hr">
+                <i class="fas fa-address-book w-5 mr-3"></i> Ressources Humaines
+            </a>
+            <a href="#" onclick="navigate('finance')" class="sidebar-link flex items-center px-6 py-3.5 hover:text-white transition" data-nav="finance">
+                <i class="fas fa-file-invoice-dollar w-5 mr-3"></i> Finances & Log.
+            </a>
+        </nav>
+
+        <div class="p-4 bg-slate-950 border-t border-slate-800">
+            <div class="flex items-center space-x-3 mb-4">
+                <div id="user-initials" class="w-8 h-8 rounded bg-blue-500 flex items-center justify-center text-white font-bold text-xs uppercase">--</div>
+                <div class="overflow-hidden text-xs">
+                    <p id="user-name" class="font-semibold text-white truncate italic">Utilisateur</p>
+                    <p id="user-role-label" class="text-slate-500 text-[10px]">Rôle</p>
+                </div>
+            </div>
+            <button onclick="logout()" class="w-full py-2 bg-slate-800 hover:bg-red-900/40 text-xs rounded transition flex items-center justify-center">
+                <i class="fas fa-power-off mr-2"></i> Déconnexion
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 flex flex-col min-w-0 bg-slate-50 relative overflow-hidden">
+        <!-- Header -->
+        <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:px-8 shrink-0">
+            <div class="flex items-center">
+                <button onclick="toggleSidebar()" class="md:hidden mr-4 text-slate-600">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <h2 id="page-title" class="text-lg font-bold text-slate-800 tracking-tight">Tableau de Bord</h2>
+            </div>
+
+            <div class="flex items-center space-x-6">
+                <!-- Selecteur de rôle pour la démo -->
+                <div class="hidden sm:flex items-center bg-slate-100 rounded-full px-3 py-1">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase mr-2">Mode:</span>
+                    <select onchange="changeRole(this.value)" id="role-switcher" class="bg-transparent border-none text-xs font-semibold text-slate-600 focus:ring-0 cursor-pointer">
+                        <option value="admin">Super-Admin</option>
+                        <option value="pm">Chargé de Projet</option>
+                        <option value="agent">Agent Terrain</option>
+                    </select>
+                </div>
+                
+                <div class="relative">
+                    <i class="fas fa-bell text-slate-400 hover:text-blue-600 cursor-pointer"></i>
+                    <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <section id="main-view" class="flex-1 overflow-y-auto p-4 md:p-8">
+            <!-- Injecté dynamiquement par JS -->
+        </section>
+    </main>
+
+    <script>
+        /**
+         * 1. DONNÉES DE DÉMARRAGE (MOCK DATA)
+         */
+        const MOCK_DATA = {
+            projects: [
+                { id: 1, name: "Formation Pro. Femmes Déplacées", location: "Goma", status: "En cours", donor: "UNHCR", budget: 15000, spent: 4500, deadline: '2023-12-30' },
+                { id: 2, name: "Soutien Scolaire Enfants Masisi", location: "Masisi", status: "Planifié", donor: "UNICEF", budget: 8000, spent: 0, deadline: '2024-03-15' }
+            ],
+            beneficiaries: [
+                { id: 1, name: "Sifa Maombi", age: 28, gender: "F", status: "Mariée", address: "Majengo", vulnerability: "Handicap moteur", project: 1 },
+                { id: 2, name: "Jean-Pierre Bakongo", age: 45, gender: "M", status: "Veuf", address: "Camp Mudja", vulnerability: "Déplacé de guerre", project: 1 }
+            ],
+            staff: [
+                { id: 1, name: "Div", role: "Coordinatrice Technique", zone: "Goma", contract: "CDI" },
+                { id: 2, name: "Kasongo", role: "Agent terrain", zone: "Goma", contract: "CDD" },
+                { id: 3, name: "Divine", role: "Agent terrain", zone: "Masisi", contract: "CDD" }
+            ],
+            expenses: [
+                { id: 101, label: "Achat kits couture", amount: 2500, category: "Matériel", project: "Projet Goma", date: "2023-10-15" },
+                { id: 102, label: "Carburant logistique", amount: 150, category: "Transport", project: "Global", date: "2023-10-20" }
+            ]
+        };
+
+        // État de l'application
+        let state = JSON.parse(localStorage.getItem('arefim_db')) || MOCK_DATA;
+        let currentUser = { name: "Directeur AREFIM", role: "admin" };
+
+        function saveData() {
+            localStorage.setItem('arefim_db', JSON.stringify(state));
+        }
+
+        /**
+         * 2. LOGIQUE DE NAVIGATION
+         */
+        function navigate(section) {
+            const view = document.getElementById('main-view');
+            const title = document.getElementById('page-title');
+            
+            // UI Update nav links
+            document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+            document.querySelector(`[data-nav="${section}"]`).classList.add('active');
+
+            // Sécurité par rôle
+            if (currentUser.role === 'agent' && ['hr', 'finance'].includes(section)) {
+                view.innerHTML = `<div class="p-10 text-center"><i class="fas fa-lock text-4xl text-slate-300 mb-4"></i><p class="text-slate-500">Accès restreint aux coordinateurs.</p></div>`;
+                return;
+            }
+
+            // Routeur
+            switch(section) {
+                case 'dashboard': renderDashboard(); break;
+                case 'projects': renderProjects(); break;
+                case 'beneficiaries': renderBeneficiaries(); break;
+                case 'hr': renderHR(); break;
+                case 'finance': renderFinance(); break;
+            }
+            if (window.innerWidth < 768) toggleSidebar();
+        }
+
+        /**
+         * 3. RENDU DES PAGES
+         */
+
+        function renderDashboard() {
+            document.getElementById('page-title').innerText = "Tableau de Bord";
+            const totalBudget = state.projects.reduce((acc, p) => acc + p.budget, 0);
+            
+            document.getElementById('main-view').innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 fade-in">
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-2 bg-blue-50 text-blue-600 rounded-lg"><i class="fas fa-rocket"></i></div>
+                        </div>
+                        <p class="text-slate-500 text-xs font-medium uppercase tracking-wider">Projets Actifs</p>
+                        <h3 class="text-2xl font-bold text-slate-800">${state.projects.length}</h3>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-2 bg-green-50 text-green-600 rounded-lg"><i class="fas fa-heart"></i></div>
+                        </div>
+                        <p class="text-slate-500 text-xs font-medium uppercase tracking-wider">Bénéficiaires</p>
+                        <h3 class="text-2xl font-bold text-slate-800">${state.beneficiaries.length}</h3>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-2 bg-amber-50 text-amber-600 rounded-lg"><i class="fas fa-coins"></i></div>
+                        </div>
+                        <p class="text-slate-500 text-xs font-medium uppercase tracking-wider">Budget Global</p>
+                        <h3 class="text-2xl font-bold text-slate-800">${totalBudget.toLocaleString()} $</h3>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-2 bg-red-50 text-red-600 rounded-lg"><i class="fas fa-clock"></i></div>
+                        </div>
+                        <p class="text-slate-500 text-xs font-medium uppercase tracking-wider">Rapports dus</p>
+                        <h3 class="text-2xl font-bold text-slate-800">2</h3>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 fade-in">
+                    <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+                        <h4 class="font-bold text-slate-700 mb-4 flex items-center"><i class="fas fa-bell mr-2 text-blue-500"></i> Alertes récentes</h4>
+                        <div class="space-y-4">
+                            <div class="p-3 bg-red-50 border-l-4 border-red-500 rounded text-sm text-red-800">
+                                Rappel : Rapport mensuel "UNHCR" à soumettre dans 5 jours.
+                            </div>
+                            <div class="p-3 bg-blue-50 border-l-4 border-blue-500 rounded text-sm text-blue-800">
+                                Nouveau bénéficiaire ajouté par l'agent <strong>Kasongo</strong>.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-900 rounded-xl p-6 text-white shadow-lg overflow-hidden relative">
+                        <div class="relative z-10">
+                            <h4 class="font-bold mb-2">Vision AREFIM 2024</h4>
+                            <p class="text-slate-400 text-sm leading-relaxed italic text-justify">
+                                "Renforcer les capacités des plus vulnérables pour une inclusion durable au sein de la communauté."
+                            </p>
+                            <button class="mt-4 text-xs bg-blue-600 px-4 py-2 rounded hover:bg-blue-500 transition">Voir le plan stratégique</button>
+                        </div>
+                        <i class="fas fa-quote-right absolute top-4 right-4 text-slate-800 text-6xl"></i>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderProjects() {
+            document.getElementById('page-title').innerText = "Gestion des Projets";
+            let html = `
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden fade-in">
+                    <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                        <h3 class="font-bold text-slate-700">Liste des interventions</h3>
+                        ${currentUser.role !== 'agent' ? `<button class="bg-slate-800 text-white px-3 py-1.5 rounded text-xs hover:bg-slate-700">+ Ajouter</button>` : ''}
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-50 text-slate-500 uppercase text-[10px] font-bold">
+                                <tr>
+                                    <th class="px-6 py-4">Projet</th>
+                                    <th class="px-6 py-4">Lieu</th>
+                                    <th class="px-6 py-4">Bailleur</th>
+                                    <th class="px-6 py-4">Statut</th>
+                                    <th class="px-6 py-4">Budget</th>
+                                    <th class="px-6 py-4">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                ${state.projects.map(p => `
+                                    <tr class="hover:bg-slate-50 transition cursor-pointer">
+                                        <td class="px-6 py-4 font-semibold text-slate-800">${p.name}</td>
+                                        <td class="px-6 py-4">${p.location}</td>
+                                        <td class="px-6 py-4"><span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[10px] font-bold">${p.donor}</span></td>
+                                        <td class="px-6 py-4">
+                                            <span class="flex items-center">
+                                                <span class="w-2 h-2 rounded-full ${p.status === 'En cours' ? 'bg-green-500' : 'bg-amber-500'} mr-2"></span>
+                                                ${p.status}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 font-mono font-medium">${p.budget}$</td>
+                                        <td class="px-6 py-4 text-blue-600 font-bold hover:underline">Gérer</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+            document.getElementById('main-view').innerHTML = html;
+        }
+
+        function renderBeneficiaries() {
+            document.getElementById('page-title').innerText = "Base de Données Bénéficiaires";
+            let html = `
+                <div class="mb-6 flex flex-col md:flex-row gap-4 fade-in">
+                    <div class="relative flex-1">
+                        <i class="fas fa-search absolute left-3 top-3 text-slate-400"></i>
+                        <input type="text" placeholder="Rechercher par nom, zone ou vulnérabilité..." class="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition">
+                    </div>
+                    <button class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition flex items-center justify-center">
+                        <i class="fas fa-plus mr-2"></i> Nouveau
+                    </button>
+                </div>
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden fade-in">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50 text-slate-500 font-bold text-[10px] uppercase">
+                            <tr>
+                                <th class="px-6 py-4">Identité</th>
+                                <th class="px-6 py-4">Age/Genre</th>
+                                <th class="px-6 py-4">Zone</th>
+                                <th class="px-6 py-4">Vulnérabilité</th>
+                                <th class="px-6 py-4">Projet lié</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            ${state.beneficiaries.map(b => `
+                                <tr class="hover:bg-slate-50 transition">
+                                    <td class="px-6 py-4 font-bold text-slate-700">${b.name}</td>
+                                    <td class="px-6 py-4">${b.age} ans / ${b.gender}</td>
+                                    <td class="px-6 py-4">${b.address}</td>
+                                    <td class="px-6 py-4"><span class="bg-red-50 text-red-600 px-2 py-0.5 rounded text-[11px] font-medium border border-red-100">${b.vulnerability}</span></td>
+                                    <td class="px-6 py-4 text-xs text-slate-500 italic">Formation Goma</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            document.getElementById('main-view').innerHTML = html;
+        }
+
+        function renderHR() {
+            document.getElementById('page-title').innerText = "Ressources Humaines";
+            let html = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 fade-in">
+                ${state.staff.map(s => `
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="w-12 h-12 bg-slate-100 rounded-full flex items-
