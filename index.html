@@ -13,7 +13,7 @@
             --light: #f4f7f6;
         }
 
-        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: var(--light); color: #333; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: var(--light); color: #333; line-height: 1.6; }
         header { background: var(--primary); color: white; padding: 20px; text-align: center; }
         
         nav { background: #34495e; display: flex; justify-content: center; gap: 10px; padding: 10px; flex-wrap: wrap; position: sticky; top: 0; z-index: 100; }
@@ -29,16 +29,25 @@
         .btn-don { background: #ff5722; color: white; font-size: 1.3rem; padding: 15px 30px; box-shadow: 0 4px 10px rgba(255,87,34,0.3); }
         .btn-danger { background: var(--danger); color: white; }
 
+        /* Accueil - Présentation */
+        .presentation-box { display: flex; gap: 30px; margin: 40px 0; text-align: left; align-items: center; flex-wrap: wrap; }
+        .pres-title { flex: 1; font-size: 2.5rem; font-weight: bold; color: var(--primary); min-width: 250px; }
+        .pres-text { flex: 2; font-size: 1.1rem; border-left: 5px solid var(--secondary); padding-left: 20px; min-width: 300px; }
+
+        /* Accueil - Activités */
+        .activities-title { text-align: center; font-size: 2rem; margin-top: 50px; color: var(--accent); font-weight: bold; text-transform: uppercase; }
+        .activities-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px; }
+        .activity-card { background: #fff; padding: 20px; border-radius: 10px; border-bottom: 4px solid var(--secondary); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .activity-card h4 { color: var(--secondary); margin-top: 0; text-transform: uppercase; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+
         table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
         th, td { border: 1px solid #eee; padding: 12px; text-align: left; }
         th { background: #f8f9fa; color: var(--primary); }
 
-        /* Accueil */
         .hero { text-align: center; padding: 20px; }
         .hero img { width: 90%; max-width: 450px; border-radius: 15px; margin: 10px; object-fit: cover; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         .slogan { font-size: 3rem; color: var(--primary); font-style: italic; margin: 25px 0; font-weight: 800; }
 
-        /* Modales */
         .modal { display: none; position: fixed; z-index: 2000; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); }
         .modal-content { background: white; margin: 5% auto; padding: 30px; width: 90%; max-width: 450px; border-radius: 15px; position: relative; }
         input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
@@ -57,7 +66,6 @@
     <button onclick="showSection('home')" class="btn-nav">🏠 Accueil</button>
     <button onclick="accessProtected('projets')" class="btn-nav">📂 Projets</button>
     <button onclick="accessProtected('beneficiaires')" class="btn-nav">🤝 Bénéficiaires</button>
-    <button onclick="accessProtected('rapports')" class="btn-nav">📄 Rapports</button>
     <button id="logoutBtn" onclick="logout()" style="display:none; background:#7f8c8d; color:white;">Déconnexion</button>
 </nav>
 
@@ -69,7 +77,41 @@
             <img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=500" alt="Soutien AREFIM">
             <h2 class="slogan">"together we can"</h2>
             <button class="btn-don" onclick="window.open('tel:+243993795789')">FAIRE UN DON (Airtel Money)</button>
-            <br><br>
+        </div>
+
+        <div class="presentation-box">
+            <div class="pres-title">QUI SOMMES NOUS ?</div>
+            <div class="pres-text">
+                <strong>Nous sommes une association sans but lucratif</strong> qui vient en aide aux personnes vulnérables et aux femmes ayant perdu espoir de retrouver leur status social après avoir précocement mis au monde.<br><br>
+                Nous prenons soins de l'éducation des enfants dans le milieu rural. Bref, nous facilitons un développement social, économique, intellectuel et moral des personnes dans l'incapacité de se reconstruire elles-mêmes.
+            </div>
+        </div>
+
+        <div class="activities-title">NOS ACTIVITÉS</div>
+        <div class="activities-grid">
+            <div class="activity-card">
+                <h4>Scolarité</h4>
+                <p><strong>FACILITÉ UNE SCOLARITÉ ET DONNATION DES BOURSES</strong></p>
+                <p>Facilité une bonne scolarité et encadrements des enfants dans différentes écoles non urbaines.</p>
+                <p>Permettre une donnation des bourses d'études aux enfants vulnérables.</p>
+            </div>
+            <div class="activity-card" style="border-bottom-color: var(--accent);">
+                <h4>Assistance aux vulnérables</h4>
+                <p>Nous venons en aide aux personnes vulnérables; aux orphelins et aux femmes ayant perdu espoir de retrouver leurs statuts social après avoir précocement mis au monde, les sans abris et les personnes du 3e âge en cas de besoin.</p>
+            </div>
+            <div class="activity-card">
+                <h4>Rééducation</h4>
+                <p><strong>Formation en :</strong></p>
+                <ul>
+                    <li>Coupe et couture.</li>
+                    <li>Alphabétisation.</li>
+                    <li>Tissage.</li>
+                    <li>Création d'AGR.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div style="text-align:center; margin-top:40px;">
             <button class="btn-main" onclick="alert('Merci ! Notre équipe à Goma vous contactera sous peu.')">Devenir un bénévole</button>
         </div>
     </div>
@@ -105,7 +147,6 @@
 <div id="loginModal" class="modal">
     <div class="modal-content">
         <h2 style="text-align:center;">Accès Restreint</h2>
-        <p style="text-align:center; color:#666;">Veuillez vous identifier pour gérer les données.</p>
         <select id="userRole">
             <option value="superadmin">Super Admin</option>
             <option value="charge_projet">Chargé du projet</option>
@@ -121,7 +162,7 @@
     <div class="modal-content">
         <h3 id="formTitle">Nouveau Registre</h3>
         <div id="inputsGroup"></div>
-        <button class="btn-main" style="width:100%;" onclick="saveToDB()">Enregistrer dans AREFIM</button>
+        <button class="btn-main" style="width:100%;" onclick="saveToDB()">Enregistrer</button>
         <button class="btn-danger" style="width:100%; margin-top:10px;" onclick="closeModal('formModal')">Fermer</button>
     </div>
 </div>
@@ -130,30 +171,22 @@
     let currentRole = "";
     let targetSection = ""; 
     let currentType = "";
-    
-    // Base de données locale
     let arefimDB = JSON.parse(localStorage.getItem('arefim_app_data')) || { termine: [], cours: [], benef: [] };
 
-    // --- NAVIGATION ET LOGIQUE D'ACCÈS ---
     function showSection(id) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
     }
 
     function accessProtected(sectionId) {
-        if (currentRole) {
-            showSection(sectionId);
-        } else {
-            targetSection = sectionId;
-            document.getElementById('loginModal').style.display = 'block';
-        }
+        if (currentRole) showSection(sectionId);
+        else { targetSection = sectionId; document.getElementById('loginModal').style.display = 'block'; }
     }
 
     function login() {
         const role = document.getElementById('userRole').value;
         const pass = document.getElementById('userPass').value;
         const keys = { "superadmin": "AREFIMDIVINE", "charge_projet": "PROJETAREFIM", "agent": "AREFIMAGENT" };
-
         if (keys[role] === pass) {
             currentRole = role;
             document.getElementById('loginModal').style.display = 'none';
@@ -171,7 +204,6 @@
         renderTables();
     }
 
-    // --- FORMULAIRES ---
     function openDataForm(type) {
         currentType = type;
         const box = document.getElementById('inputsGroup');
@@ -189,7 +221,6 @@
         if(currentType === 'TERMINE') arefimDB.termine.push(item);
         else if(currentType === 'COURS') arefimDB.cours.push(item);
         else arefimDB.benef.push(item);
-
         localStorage.setItem('arefim_app_data', JSON.stringify(arefimDB));
         renderTables();
         closeModal('formModal');
@@ -205,6 +236,7 @@
     function renderTables() {
         const draw = (list, tableId, type) => {
             const body = document.querySelector(`#${tableId} tbody`);
+            if(!body) return;
             body.innerHTML = "";
             list.forEach(x => {
                 body.innerHTML += `<tr><td>${x.v1}</td><td>${x.v2}</td><td>${x.v3}</td><td>${x.v4}</td>
