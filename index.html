@@ -3,45 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AREFIM - Application Gestion</title>
+    <title>AREFIM - Gestion Humanitaire</title>
     <style>
-        :root {
-            --primary: #2c3e50;
-            --secondary: #27ae60;
-            --accent: #e67e22;
-            --light: #f4f7f6;
-            --dark: #333;
-        }
-
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: var(--light); color: var(--dark); }
-        header { background: var(--primary); color: white; padding: 1rem; text-align: center; }
-        nav { background: #34495e; display: flex; justify-content: center; gap: 10px; padding: 10px; flex-wrap: wrap; }
+        :root { --primary: #2c3e50; --secondary: #27ae60; --accent: #e67e22; --light: #f4f7f6; --danger: #e74c3c; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--light); }
+        header { background: var(--primary); color: white; padding: 15px; text-align: center; }
+        nav { background: #34495e; display: flex; justify-content: center; gap: 5px; padding: 10px; flex-wrap: wrap; }
         
-        button { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; transition: 0.3s; font-weight: bold; }
+        button { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
         .btn-main { background: var(--secondary); color: white; }
-        .btn-action { background: var(--accent); color: white; margin: 5px; }
-        .btn-admin { background: #c0392b; color: white; }
+        .btn-edit { background: #f1c40f; color: black; margin-right: 5px; }
+        .btn-delete { background: var(--danger); color: white; }
+        .btn-add { background: var(--primary); color: white; margin-bottom: 10px; }
 
-        .container { padding: 20px; max-width: 1200px; margin: auto; }
-        .section { display: none; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-top: 20px; }
-        .active { display: block; animation: fadeIn 0.5s; }
+        .container { padding: 20px; max-width: 1100px; margin: auto; }
+        .section { display: none; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .active { display: block; }
 
-        /* Accueil Styles */
-        .hero { text-align: center; padding: 40px; }
-        .hero img { width: 100%; max-width: 400px; border-radius: 10px; margin: 10px; object-fit: cover; height: 250px; }
-        .slogan { font-size: 2.5rem; font-style: italic; color: var(--primary); margin: 20px 0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9em; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background: #ecf0f1; }
 
-        /* Tableaux */
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background: var(--primary); color: white; }
-        tr:nth-child(even) { background: #f9f9f9; }
-
-        /* Formulaires */
-        .form-group { margin-bottom: 15px; }
-        input, select, textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .hero { text-align: center; }
+        .slogan { font-size: 2rem; color: var(--primary); font-style: italic; margin: 20px 0; }
+        
+        /* Modal simple */
+        .modal { display:none; position:fixed; z-index:100; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); }
+        .modal-content { background:white; margin:10% auto; padding:20px; width:90%; max-width:500px; border-radius:8px; }
+        input, select, textarea { width:100%; padding:8px; margin:10px 0; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -51,156 +40,102 @@
     <p>Association pour la Rééducation des filles mères</p>
 </header>
 
-<nav>
+<nav id="mainNav" style="display:none;">
     <button onclick="showSection('home')" class="btn-main">Accueil</button>
-    <button onclick="showSection('projets')" class="btn-main">Projets</button>
-    <button onclick="showSection('beneficiaires')" class="btn-main">Bénéficiaires</button>
-    <button onclick="showSection('rapports')" class="btn-main">Rapports</button>
-    <button onclick="showSection('about')" class="btn-main">À Propos</button>
-    <button onclick="showSection('achievements')" class="btn-main">Nos Achievements</button>
-    <button onclick="logout()" id="logoutBtn" style="display:none; background:#7f8c8d; color:white;">Déconnexion</button>
+    <button onclick="showSection('sec-projets')" class="btn-main">Projets</button>
+    <button onclick="showSection('sec-beneficiaires')" class="btn-main">Bénéficiaires</button>
+    <button onclick="location.reload()">Déconnexion</button>
 </nav>
 
 <div class="container">
-    
     <div id="home" class="section active">
         <div class="hero">
-            <div class="photos">
-                <img src="https://images.unsplash.com/photo-1542810634-71277d95dcbb?q=80&w=800" alt="Formation 1">
-                <img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=800" alt="Formation 2">
+            <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
+                <img src="https://via.placeholder.com/300x200?text=Formation+1" alt="Formation" style="border-radius:8px;">
+                <img src="https://via.placeholder.com/300x200?text=Formation+2" alt="Formation" style="border-radius:8px;">
             </div>
-            <h2 class="slogan">"Together we can"</h2>
-            
-            <div style="margin-top: 30px;">
-                <button class="btn-action" onclick="window.location.href='tel:+243993795789'">Faire un Don (Airtel Money)</button>
-                <button class="btn-action" onclick="alert('Merci ! Notre équipe vous contactera.')">Devenir Bénévole</button>
-            </div>
-
-            <div style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px;">
-                <h3>S'enregistrer</h3>
-                <div class="form-group">
-                    <input type="text" placeholder="Votre Nom complet">
-                    <input type="tel" placeholder="Numéro de Téléphone">
-                    <input type="text" placeholder="Adresse physique">
-                    <button class="btn-main" style="margin-top: 10px;">Envoyer</button>
-                </div>
-            </div>
+            <h2 class="slogan">"together we can"</h2>
+            <button class="btn-main" style="background:#ff5722; font-size:1.2rem; padding:15px;" onclick="window.open('tel:+243993795789')">FAIRE UN DON (Airtel Money)</button>
+            <br><br>
+            <button class="btn-main" onclick="alert('Demande envoyée !')">Devenir un bénévole</button>
         </div>
     </div>
 
-    <div id="projets" class="section">
+    <div id="sec-projets" class="section">
         <h2>Gestion des Projets</h2>
-        <div id="auth-check-projects">Veuillez vous connecter pour gérer les projets.</div>
-        <div id="content-projects" style="display:none;">
-            <h3>Projets Terminés</h3>
-            <table id="tableTermine">
-                <thead>
-                    <tr><th>Nom</th><th>Bénéficiaires</th><th>Donateur</th><th>Budget</th><th>Zone</th><th>Actions</th></tr>
-                </thead>
-                <tbody id="bodyTermine"></tbody>
-            </table>
-            <button class="btn-admin" id="btnAddTermine" style="display:none;">+ Ajouter Projet Terminé</button>
+        
+        <h3>1. Projets Terminés (Admin)</h3>
+        <button id="btnNewTermine" class="btn-add" onclick="openModal('termine')">+ Ajouter Projet Terminé</button>
+        <table id="tableTermine">
+            <thead><tr><th>Nom</th><th>Bénéficiers</th><th>Donateur</th><th>Budget</th><th>Zone</th><th>Actions</th></tr></thead>
+            <tbody></tbody>
+        </table>
 
-            <hr>
-            <h3>Projets en Cours</h3>
-            <button class="btn-action" id="btnAddEnCours">+ Nouvelle Évaluation</button>
-
-            <hr>
-            <h3>Projets Futurs</h3>
-            <div id="futurControls" style="display:none;">
-                 <button class="btn-admin">+ Ajouter Projet Futur</button>
-            </div>
-            <table id="tableFutur">
-                <thead>
-                    <tr><th>Nom</th><th>Bénéficiaires</th><th>Zone</th><th>Description</th><th>Actions</th></tr>
-                </thead>
-                <tbody id="bodyFutur"></tbody>
-            </table>
-        </div>
-    </div>
-
-    <div id="beneficiaires" class="section">
-        <h2>Gestion des Bénéficiaires</h2>
-        <div id="beneficiary-controls">
-            <button class="btn-action" onclick="alert('Formulaire ajout bénéficiaire')">+ Ajouter Individu</button>
-            <button class="btn-action" onclick="alert('Formulaire ajout association')">+ Ajouter Association</button>
-        </div>
-        <table>
-            <thead>
-                <tr><th>Nom</th><th>Sexe/Type</th><th>Âge/Point Focus</th><th>Programme</th><th>Action</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>Exemple : Marie K.</td><td>F</td><td>19 ans</td><td>Formation Couture</td><td><button>Modifier</button></td></tr>
-            </tbody>
+        <h3>2. Projets en Cours (Admin & Chargé)</h3>
+        <button id="btnNewCours" class="btn-add" onclick="openModal('cours')">+ Ajouter Projet en cours</button>
+        <table id="tableCours">
+            <thead><tr><th>Titre</th><th>Type Bénéf.</th><th>Bailleur</th><th>Zone</th><th>Actions</th></tr></thead>
+            <tbody></tbody>
         </table>
     </div>
 
-    <div id="rapports" class="section">
-        <h2>Rapports des Projets (PDF)</h2>
-        <div id="report-list">
-            <div style="border:1px solid #ddd; padding:10px; display:flex; align-items:center; gap:20px;">
-                <img src="https://via.placeholder.com/100" alt="résumé">
-                <div>
-                    <h4>Rapport Annuel 2025</h4>
-                    <button class="btn-main">Télécharger PDF</button>
-                </div>
-            </div>
-        </div>
+    <div id="sec-beneficiaires" class="section">
+        <h2>Gestion des Bénéficiaires</h2>
+        <button class="btn-add" onclick="openModal('benef')">+ Ajouter Individu / Association</button>
+        <table id="tableBenef">
+            <thead><tr><th>Nom</th><th>Sexe/Type</th><th>Âge/Focus</th><th>Programme</th><th>Actions</th></tr></thead>
+            <tbody></tbody>
+        </table>
     </div>
-
-    <div id="about" class="section">
-        <h2>À propos de nous</h2>
-        <div id="about-content">Chargement du contenu...</div>
-    </div>
-
-    <div id="achievements" class="section">
-        <h2>Nos Achievements</h2>
-        <div id="achieve-gallery">
-            <p>Nos succès s'afficheront ici.</p>
-        </div>
-    </div>
-
 </div>
 
-<div id="loginModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:flex; justify-content:center; align-items:center; z-index:1000;">
-    <div style="background:white; padding:30px; border-radius:10px; text-align:center; width:300px;">
-        <h3>Connexion AREFIM</h3>
-        <select id="userRole" style="margin-bottom:10px;">
+<div id="dataModal" class="modal">
+    <div class="modal-content">
+        <h3 id="modalTitle">Ajouter une donnée</h3>
+        <div id="formFields"></div>
+        <button class="btn-main" onclick="saveData()">Enregistrer</button>
+        <button class="btn-delete" onclick="closeModal()">Annuler</button>
+    </div>
+</div>
+
+<div id="loginModal" class="modal" style="display:flex;">
+    <div class="modal-content" style="text-align:center;">
+        <h2>Connexion AREFIM</h2>
+        <select id="userRole">
             <option value="superadmin">Super Admin</option>
-            <option value="charge_projet">Chargé du projet</option>
+            <option value="charge">Chargé du projet</option>
             <option value="agent">Agent de terrain</option>
         </select>
-        <input type="password" id="userPass" placeholder="Mot de passe" style="margin-bottom:10px;">
-        <button class="btn-main" onclick="login()">Se Connecter</button>
+        <input type="password" id="userPass" placeholder="Mot de passe">
+        <button class="btn-main" onclick="checkLogin()">Entrer</button>
     </div>
 </div>
 
 <script>
-    let currentUser = null;
+    let currentRole = "";
+    let currentType = ""; // termine, cours, benef
+    
+    // Base de données locale
+    let db = JSON.parse(localStorage.getItem('arefim_db')) || { termine: [], cours: [], benef: [] };
 
-    const CREDENTIALS = {
-        "superadmin": "AREFIMDIVINE",
-        "charge_projet": "PROJETAREFIM",
-        "agent": "AREFIMAGENT"
-    };
-
-    function login() {
+    function checkLogin() {
         const role = document.getElementById('userRole').value;
         const pass = document.getElementById('userPass').value;
+        const creds = { "superadmin":"AREFIMDIVINE", "charge":"PROJETAREFIM", "agent":"AREFIMAGENT" };
 
-        if (CREDENTIALS[role] === pass) {
-            currentUser = role;
+        if(creds[role] === pass) {
+            currentRole = role;
             document.getElementById('loginModal').style.display = 'none';
-            document.getElementById('logoutBtn').style.display = 'block';
+            document.getElementById('mainNav').style.display = 'flex';
             applyPermissions();
-            alert("Bienvenue, " + role);
-        } else {
-            alert("Mot de passe incorrect !");
-        }
+            renderAll();
+        } else { alert("Erreur de mot de passe"); }
     }
 
-    function logout() {
-        location.reload();
+    function applyPermissions() {
+        // Cacher les boutons selon le rôle
+        document.getElementById('btnNewTermine').style.display = (currentRole === 'superadmin') ? 'block' : 'none';
+        document.getElementById('btnNewCours').style.display = (currentRole === 'agent') ? 'none' : 'block';
     }
 
     function showSection(id) {
@@ -208,30 +143,61 @@
         document.getElementById(id).classList.add('active');
     }
 
-    function applyPermissions() {
-        // Affichage du contenu restreint
-        document.getElementById('content-projects').style.display = 'block';
-        document.getElementById('auth-check-projects').style.display = 'none';
-
-        // Permissions Super Admin
-        if (currentUser === 'superadmin') {
-            document.getElementById('btnAddTermine').style.display = 'inline-block';
-            document.getElementById('futurControls').style.display = 'block';
+    function openModal(type) {
+        currentType = type;
+        const container = document.getElementById('formFields');
+        container.innerHTML = "";
+        
+        if(type === 'termine') {
+            container.innerHTML = `<input id="f1" placeholder="Nom du projet"><input id="f2" placeholder="Bénéficiaires"><input id="f3" placeholder="Donateur"><input id="f4" placeholder="Budget">`;
+        } else if(type === 'cours') {
+            container.innerHTML = `<input id="f1" placeholder="Titre du projet"><input id="f2" placeholder="Type de bénéficiaire"><input id="f3" placeholder="Bailleur"><input id="f4" placeholder="Zone">`;
+        } else if(type === 'benef') {
+            container.innerHTML = `<input id="f1" placeholder="Nom complet"><input id="f2" placeholder="Sexe / Type"><input id="f3" placeholder="Âge / Focus"><input id="f4" placeholder="Programme">`;
         }
-
-        // Permissions Chargé de projet
-        if (currentUser === 'superadmin' || currentUser === 'charge_projet') {
-            document.getElementById('btnAddEnCours').style.display = 'inline-block';
-            document.getElementById('futurControls').style.display = 'block';
-        }
+        document.getElementById('dataModal').style.display = 'block';
     }
 
-    // Initialisation
-    window.onload = () => {
-        // simulation de données
-        const table = document.getElementById('bodyTermine');
-        table.innerHTML = `<tr><td>Appui Couture</td><td>40 filles</td><td>Fonds Propre</td><td>2500$</td><td>Goma</td><td>Accès Restreint</td></tr>`;
-    };
+    function closeModal() { document.getElementById('dataModal').style.display = 'none'; }
+
+    function saveData() {
+        const entry = {
+            id: Date.now(),
+            val1: document.getElementById('f1').value,
+            val2: document.getElementById('f2').value,
+            val3: document.getElementById('f3').value,
+            val4: document.getElementById('f4').value
+        };
+        db[currentType].push(entry);
+        localStorage.setItem('arefim_db', JSON.stringify(db));
+        renderAll();
+        closeModal();
+    }
+
+    function deleteItem(type, id) {
+        if(currentRole !== 'superadmin' && type === 'termine') return alert("Seul le Super Admin peut supprimer ici");
+        db[type] = db[type].filter(item => item.id !== id);
+        localStorage.setItem('arefim_db', JSON.stringify(db));
+        renderAll();
+    }
+
+    function renderAll() {
+        const types = ['termine', 'cours', 'benef'];
+        types.forEach(t => {
+            const tbody = document.querySelector(`#table${t.charAt(0).toUpperCase() + t.slice(1)} tbody`);
+            if(!tbody) return;
+            tbody.innerHTML = "";
+            db[t].forEach(item => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${item.val1}</td><td>${item.val2}</td><td>${item.val3}</td><td>${item.val4}</td>
+                        <td>
+                            <button class="btn-delete" onclick="deleteItem('${t}', ${item.id})">Suppr.</button>
+                        </td>
+                    </tr>`;
+            });
+        });
+    }
 </script>
 
 </body>
