@@ -3,266 +3,236 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AREFIM v2.0 - Gestion Centralisée</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <title>AREFIM - Application Gestion</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
-        .sidebar-item.active { background-color: #eff6ff; color: #2563eb; border-right: 4px solid #2563eb; }
-        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(4px); }
-        .modal.open { display: flex; align-items: center; justify-content: center; }
-        .fade-in { animation: fadeIn 0.3s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        :root {
+            --primary: #2c3e50;
+            --secondary: #27ae60;
+            --accent: #e67e22;
+            --light: #f4f7f6;
+            --dark: #333;
+        }
+
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: var(--light); color: var(--dark); }
+        header { background: var(--primary); color: white; padding: 1rem; text-align: center; }
+        nav { background: #34495e; display: flex; justify-content: center; gap: 10px; padding: 10px; flex-wrap: wrap; }
+        
+        button { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; transition: 0.3s; font-weight: bold; }
+        .btn-main { background: var(--secondary); color: white; }
+        .btn-action { background: var(--accent); color: white; margin: 5px; }
+        .btn-admin { background: #c0392b; color: white; }
+
+        .container { padding: 20px; max-width: 1200px; margin: auto; }
+        .section { display: none; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-top: 20px; }
+        .active { display: block; animation: fadeIn 0.5s; }
+
+        /* Accueil Styles */
+        .hero { text-align: center; padding: 40px; }
+        .hero img { width: 100%; max-width: 400px; border-radius: 10px; margin: 10px; object-fit: cover; height: 250px; }
+        .slogan { font-size: 2.5rem; font-style: italic; color: var(--primary); margin: 20px 0; }
+
+        /* Tableaux */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: var(--primary); color: white; }
+        tr:nth-child(even) { background: #f9f9f9; }
+
+        /* Formulaires */
+        .form-group { margin-bottom: 15px; }
+        input, select, textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
-<body class="flex h-screen overflow-hidden">
+<body>
 
-    <!-- SIDEBAR -->
-    <aside id="sidebar" class="w-72 bg-white border-r border-slate-200 flex flex-col hidden md:flex">
-        <div class="p-6 border-b border-slate-100">
-            <div class="flex items-center space-x-3 text-blue-600">
-                <i class="fas fa-shield-heart text-3xl"></i>
-                <h1 class="text-2xl font-black tracking-tighter text-slate-900">AREFIM</h1>
+<header>
+    <h1>AREFIM</h1>
+    <p>Association pour la Rééducation des filles mères</p>
+</header>
+
+<nav>
+    <button onclick="showSection('home')" class="btn-main">Accueil</button>
+    <button onclick="showSection('projets')" class="btn-main">Projets</button>
+    <button onclick="showSection('beneficiaires')" class="btn-main">Bénéficiaires</button>
+    <button onclick="showSection('rapports')" class="btn-main">Rapports</button>
+    <button onclick="showSection('about')" class="btn-main">À Propos</button>
+    <button onclick="showSection('achievements')" class="btn-main">Nos Achievements</button>
+    <button onclick="logout()" id="logoutBtn" style="display:none; background:#7f8c8d; color:white;">Déconnexion</button>
+</nav>
+
+<div class="container">
+    
+    <div id="home" class="section active">
+        <div class="hero">
+            <div class="photos">
+                <img src="https://images.unsplash.com/photo-1542810634-71277d95dcbb?q=80&w=800" alt="Formation 1">
+                <img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=800" alt="Formation 2">
             </div>
-        </div>
-        <nav class="flex-1 py-6 space-y-1">
-            <a href="#" onclick="showSection('dashboard')" class="sidebar-item active flex items-center px-6 py-3 font-semibold transition-all" data-section="dashboard">
-                <i class="fas fa-grid-2 w-6 mr-3"></i> Dashboard
-            </a>
-            <a href="#" onclick="showSection('projects')" class="sidebar-item flex items-center px-6 py-3 font-semibold text-slate-500 hover:bg-slate-50" data-section="projects">
-                <i class="fas fa-briefcase w-6 mr-3"></i> Projets
-            </a>
-            <a href="#" onclick="showSection('beneficiaries')" class="sidebar-item flex items-center px-6 py-3 font-semibold text-slate-500 hover:bg-slate-50" data-section="beneficiaries">
-                <i class="fas fa-users w-6 mr-3"></i> Bénéficiaires
-            </a>
-            <a href="#" onclick="showSection('reports')" class="sidebar-item flex items-center px-6 py-3 font-semibold text-slate-500 hover:bg-slate-50" data-section="reports">
-                <i class="fas fa-camera w-6 mr-3"></i> Rapports Terrain
-            </a>
-            <div id="admin-menu">
-                <div class="px-6 mt-8 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Admin</div>
-                <a href="#" onclick="showSection('finance')" class="sidebar-item flex items-center px-6 py-3 font-semibold text-slate-500 hover:bg-slate-50" data-section="finance">
-                    <i class="fas fa-wallet w-6 mr-3"></i> Finance
-                </a>
+            <h2 class="slogan">"Together we can"</h2>
+            
+            <div style="margin-top: 30px;">
+                <button class="btn-action" onclick="window.location.href='tel:+243993795789'">Faire un Don (Airtel Money)</button>
+                <button class="btn-action" onclick="alert('Merci ! Notre équipe vous contactera.')">Devenir Bénévole</button>
             </div>
-        </nav>
-        <div class="p-4 bg-slate-50 border-t border-slate-100">
-            <div class="flex items-center space-x-3 bg-white p-3 rounded-xl shadow-sm border border-slate-200">
-                <div id="user-avatar" class="w-10 h-10 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold">A</div>
-                <div>
-                    <p id="user-name" class="text-sm font-bold text-slate-800">Admin</p>
-                    <p id="user-role-label" class="text-[10px] text-blue-600 font-bold uppercase tracking-tight">Coordination</p>
+
+            <div style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px;">
+                <h3>S'enregistrer</h3>
+                <div class="form-group">
+                    <input type="text" placeholder="Votre Nom complet">
+                    <input type="tel" placeholder="Numéro de Téléphone">
+                    <input type="text" placeholder="Adresse physique">
+                    <button class="btn-main" style="margin-top: 10px;">Envoyer</button>
                 </div>
             </div>
-        </div>
-    </aside>
-
-    <!-- MAIN -->
-    <main class="flex-1 flex flex-col bg-slate-50 overflow-hidden">
-        <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 shrink-0">
-            <div class="flex items-center">
-                <button onclick="toggleSidebar()" class="md:hidden mr-4 text-slate-600"><i class="fas fa-bars"></i></button>
-                <h2 id="page-title" class="text-lg font-bold text-slate-800 tracking-tight">Tableau de bord</h2>
-            </div>
-            <div class="flex items-center space-x-4">
-                <select onchange="switchRole(this.value)" class="bg-slate-100 border-none rounded-lg text-xs font-bold p-2 text-slate-600 focus:ring-2 ring-blue-500">
-                    <option value="admin">Super-Admin</option>
-                    <option value="pm">Chargé de Projet</option>
-                    <option value="agent">Agent Terrain</option>
-                </select>
-            </div>
-        </header>
-
-        <div id="content" class="flex-1 overflow-y-auto p-6 md:p-8"></div>
-    </main>
-
-    <!-- MODAL : AJOUT BÉNÉFICIAIRE -->
-    <div id="modal-beneficiary" class="modal p-4">
-        <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden fade-in">
-            <div class="p-6 border-b border-slate-100 flex justify-between">
-                <h3 class="font-bold text-slate-800">Nouveau Bénéficiaire</h3>
-                <button onclick="closeModal('modal-beneficiary')" class="text-slate-400 hover:text-red-500"><i class="fas fa-times"></i></button>
-            </div>
-            <form onsubmit="saveBeneficiary(event)" class="p-6 space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nom Complet</label>
-                    <input type="text" id="ben-name" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm outline-none focus:ring-2 ring-blue-500">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Âge</label>
-                        <input type="number" id="ben-age" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Genre</label>
-                        <select id="ben-gender" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm">
-                            <option>Femme</option><option>Homme</option><option>Enfant</option>
-                        </select>
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Type de Vulnérabilité</label>
-                    <input type="text" id="ben-vul" placeholder="Ex: Déplacé de guerre" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm">
-                </div>
-                <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 shadow-lg shadow-blue-200 transition">Enregistrer le bénéficiaire</button>
-            </form>
         </div>
     </div>
 
-    <script>
-        // INITIALISATION DES DONNÉES (Stockage Local)
-        let data = JSON.parse(localStorage.getItem('arefim_storage')) || {
-            projects: [{ id: 1, name: "Projet Goma UNHCR", budget: 15000, spent: 4500, status: "Actif" }],
-            beneficiaries: [{ id: 1, name: "Sifa Maombi", age: 28, gender: "Femme", vulnerability: "Handicap", address: "Goma", status: "Validé" }],
-            reports: []
-        };
+    <div id="projets" class="section">
+        <h2>Gestion des Projets</h2>
+        <div id="auth-check-projects">Veuillez vous connecter pour gérer les projets.</div>
+        <div id="content-projects" style="display:none;">
+            <h3>Projets Terminés</h3>
+            <table id="tableTermine">
+                <thead>
+                    <tr><th>Nom</th><th>Bénéficiaires</th><th>Donateur</th><th>Budget</th><th>Zone</th><th>Actions</th></tr>
+                </thead>
+                <tbody id="bodyTermine"></tbody>
+            </table>
+            <button class="btn-admin" id="btnAddTermine" style="display:none;">+ Ajouter Projet Terminé</button>
 
-        let currentRole = 'admin';
+            <hr>
+            <h3>Projets en Cours</h3>
+            <button class="btn-action" id="btnAddEnCours">+ Nouvelle Évaluation</button>
 
-        function saveData() { localStorage.setItem('arefim_storage', JSON.stringify(data)); }
+            <hr>
+            <h3>Projets Futurs</h3>
+            <div id="futurControls" style="display:none;">
+                 <button class="btn-admin">+ Ajouter Projet Futur</button>
+            </div>
+            <table id="tableFutur">
+                <thead>
+                    <tr><th>Nom</th><th>Bénéficiaires</th><th>Zone</th><th>Description</th><th>Actions</th></tr>
+                </thead>
+                <tbody id="bodyFutur"></tbody>
+            </table>
+        </div>
+    </div>
 
-        // NAVIGATION
-        function showSection(section) {
-            document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
-            document.querySelector(`[data-section="${section}"]`).classList.add('active');
-            
-            const container = document.getElementById('content');
-            const title = document.getElementById('page-title');
+    <div id="beneficiaires" class="section">
+        <h2>Gestion des Bénéficiaires</h2>
+        <div id="beneficiary-controls">
+            <button class="btn-action" onclick="alert('Formulaire ajout bénéficiaire')">+ Ajouter Individu</button>
+            <button class="btn-action" onclick="alert('Formulaire ajout association')">+ Ajouter Association</button>
+        </div>
+        <table>
+            <thead>
+                <tr><th>Nom</th><th>Sexe/Type</th><th>Âge/Point Focus</th><th>Programme</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Exemple : Marie K.</td><td>F</td><td>19 ans</td><td>Formation Couture</td><td><button>Modifier</button></td></tr>
+            </tbody>
+        </table>
+    </div>
 
-            if (currentRole === 'agent' && (section === 'finance')) {
-                container.innerHTML = `<div class="p-10 text-center text-slate-400">Accès non autorisé</div>`;
-                return;
-            }
-
-            switch(section) {
-                case 'dashboard': renderDashboard(container, title); break;
-                case 'projects': renderProjects(container, title); break;
-                case 'beneficiaries': renderBeneficiaries(container, title); break;
-                case 'reports': renderReports(container, title); break;
-                case 'finance': renderFinance(container, title); break;
-            }
-        }
-
-        // RENDU : DASHBOARD
-        function renderDashboard(c, t) {
-            t.innerText = "Tableau de Bord";
-            c.innerHTML = `
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 fade-in">
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-blue-600">
-                        <p class="text-xs font-bold text-slate-400 uppercase">Projets</p>
-                        <p class="text-3xl font-black text-slate-900">${data.projects.length}</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-green-500">
-                        <p class="text-xs font-bold text-slate-400 uppercase">Bénéficiaires</p>
-                        <p class="text-3xl font-black text-slate-900">${data.beneficiaries.length}</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-amber-500">
-                        <p class="text-xs font-bold text-slate-400 uppercase">Rapports Terrain</p>
-                        <p class="text-3xl font-black text-slate-900">${data.reports.length}</p>
-                    </div>
+    <div id="rapports" class="section">
+        <h2>Rapports des Projets (PDF)</h2>
+        <div id="report-list">
+            <div style="border:1px solid #ddd; padding:10px; display:flex; align-items:center; gap:20px;">
+                <img src="https://via.placeholder.com/100" alt="résumé">
+                <div>
+                    <h4>Rapport Annuel 2025</h4>
+                    <button class="btn-main">Télécharger PDF</button>
                 </div>
-                <div class="bg-blue-900 rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl">
-                    <h3 class="text-2xl font-bold mb-2">Bienvenue sur AREFIM Central</h3>
-                    <p class="text-blue-200 mb-6 max-w-md italic">Optimisez l'impact de vos actions humanitaires à Goma et Masisi.</p>
-                    <button onclick="showSection('beneficiaries')" class="bg-white text-blue-900 px-6 py-2.5 rounded-xl font-bold text-sm">Gérer les bénéficiaires</button>
-                    <i class="fas fa-hands-holding absolute -right-10 -bottom-10 text-9xl text-white opacity-10"></i>
-                </div>
-            `;
+            </div>
+        </div>
+    </div>
+
+    <div id="about" class="section">
+        <h2>À propos de nous</h2>
+        <div id="about-content">Chargement du contenu...</div>
+    </div>
+
+    <div id="achievements" class="section">
+        <h2>Nos Achievements</h2>
+        <div id="achieve-gallery">
+            <p>Nos succès s'afficheront ici.</p>
+        </div>
+    </div>
+
+</div>
+
+<div id="loginModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:flex; justify-content:center; align-items:center; z-index:1000;">
+    <div style="background:white; padding:30px; border-radius:10px; text-align:center; width:300px;">
+        <h3>Connexion AREFIM</h3>
+        <select id="userRole" style="margin-bottom:10px;">
+            <option value="superadmin">Super Admin</option>
+            <option value="charge_projet">Chargé du projet</option>
+            <option value="agent">Agent de terrain</option>
+        </select>
+        <input type="password" id="userPass" placeholder="Mot de passe" style="margin-bottom:10px;">
+        <button class="btn-main" onclick="login()">Se Connecter</button>
+    </div>
+</div>
+
+<script>
+    let currentUser = null;
+
+    const CREDENTIALS = {
+        "superadmin": "AREFIMDIVINE",
+        "charge_projet": "PROJETAREFIM",
+        "agent": "AREFIMAGENT"
+    };
+
+    function login() {
+        const role = document.getElementById('userRole').value;
+        const pass = document.getElementById('userPass').value;
+
+        if (CREDENTIALS[role] === pass) {
+            currentUser = role;
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('logoutBtn').style.display = 'block';
+            applyPermissions();
+            alert("Bienvenue, " + role);
+        } else {
+            alert("Mot de passe incorrect !");
+        }
+    }
+
+    function logout() {
+        location.reload();
+    }
+
+    function showSection(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    function applyPermissions() {
+        // Affichage du contenu restreint
+        document.getElementById('content-projects').style.display = 'block';
+        document.getElementById('auth-check-projects').style.display = 'none';
+
+        // Permissions Super Admin
+        if (currentUser === 'superadmin') {
+            document.getElementById('btnAddTermine').style.display = 'inline-block';
+            document.getElementById('futurControls').style.display = 'block';
         }
 
-        // RENDU : BÉNÉFICIAIRES
-        function renderBeneficiaries(c, t) {
-            t.innerText = "Base de données Bénéficiaires";
-            c.innerHTML = `
-                <div class="flex justify-between items-center mb-6 fade-in">
-                    <h3 class="font-bold text-slate-700 uppercase text-xs tracking-widest">Registre validé</h3>
-                    <button onclick="openModal('modal-beneficiary')" class="bg-blue-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-blue-200 hover:scale-105 transition">+ Nouveau</button>
-                </div>
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden fade-in">
-                    <table class="w-full text-left">
-                        <thead class="bg-slate-50 text-[10px] uppercase font-bold text-slate-400">
-                            <tr><th class="px-6 py-4">Nom</th><th class="px-6 py-4">Vulnérabilité</th><th class="px-6 py-4">Status</th></tr>
-                        </thead>
-                        <tbody class="text-sm divide-y divide-slate-100">
-                            ${data.beneficiaries.map(b => `
-                                <tr class="hover:bg-slate-50">
-                                    <td class="px-6 py-4 font-bold text-slate-800">${b.name} <span class="block text-[10px] text-slate-400">${b.age} ans / ${b.gender}</span></td>
-                                    <td class="px-6 py-4"><span class="bg-red-50 text-red-600 px-2 py-1 rounded-md text-[10px] font-bold">${b.vulnerability}</span></td>
-                                    <td class="px-6 py-4 text-green-500 font-bold"><i class="fas fa-check-circle mr-1"></i> ${b.status}</td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
+        // Permissions Chargé de projet
+        if (currentUser === 'superadmin' || currentUser === 'charge_projet') {
+            document.getElementById('btnAddEnCours').style.display = 'inline-block';
+            document.getElementById('futurControls').style.display = 'block';
         }
+    }
 
-        // RENDU : RAPPORTS (FONCTION PHOTO)
-        function renderReports(c, t) {
-            t.innerText = "Rapports d'activité Terrain";
-            c.innerHTML = `
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 fade-in">
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                        <h4 class="font-bold mb-4">Soumettre un rapport</h4>
-                        <div class="space-y-4">
-                            <div onclick="alert('Caméra activée !')" class="border-2 border-dashed border-slate-200 rounded-2xl h-40 flex flex-col items-center justify-center text-slate-400 hover:bg-slate-50 cursor-pointer transition">
-                                <i class="fas fa-camera text-3xl mb-2"></i>
-                                <p class="text-xs font-bold uppercase">Prendre une photo</p>
-                            </div>
-                            <textarea id="rep-text" placeholder="Description de l'activité..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm outline-none focus:ring-2 ring-blue-500"></textarea>
-                            <button onclick="saveReport()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold">Envoyer au bureau</button>
-                        </div>
-                    </div>
-                    <div class="space-y-4">
-                        <h4 class="font-bold text-slate-700 uppercase text-xs">Historique des rapports</h4>
-                        ${data.reports.length === 0 ? '<p class="text-slate-400 italic text-sm">Aucun rapport envoyé.</p>' : data.reports.map(r => `
-                            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex items-start space-x-3">
-                                <i class="fas fa-file-alt text-blue-500 mt-1"></i>
-                                <div><p class="text-sm font-bold">${r.text}</p><p class="text-[10px] text-slate-400">${r.date}</p></div>
-                            </div>
-                        `).reverse().join('')}
-                    </div>
-                </div>
-            `;
-        }
+    // Initialisation
+    window.onload = () => {
+        // simulation de données
+        const table = document.getElementById('bodyTermine');
+        table.innerHTML = `<tr><td>Appui Couture</td><td>40 filles</td><td>Fonds Propre</td><td>2500$</td><td>Goma</td><td>Accès Restreint</td></tr>`;
+    };
+</script>
 
-        // ACTIONS
-        function openModal(id) { document.getElementById(id).classList.add('open'); }
-        function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-        function saveBeneficiary(e) {
-            e.preventDefault();
-            const newBen = {
-                id: Date.now(),
-                name: document.getElementById('ben-name').value,
-                age: document.getElementById('ben-age').value,
-                gender: document.getElementById('ben-gender').value,
-                vulnerability: document.getElementById('ben-vul').value,
-                status: "Validé"
-            };
-            data.beneficiaries.push(newBen);
-            saveData();
-            closeModal('modal-beneficiary');
-            showSection('beneficiaries');
-        }
-
-        function saveReport() {
-            const text = document.getElementById('rep-text').value;
-            if(!text) return alert("Veuillez décrire l'activité.");
-            data.reports.push({ text: text, date: new Date().toLocaleString() });
-            saveData();
-            showSection('reports');
-        }
-
-        function switchRole(role) {
-            currentRole = role;
-            document.getElementById('user-name').innerText = role === 'admin' ? "Admin Coordination" : (role === 'pm' ? "Chargé de Projet" : "Kasongo Agent");
-            document.getElementById('user-role-label').innerText = role;
-            document.getElementById('admin-menu').style.display = (role === 'agent') ? 'none' : 'block';
-            showSection('dashboard');
-        }
-
-        window.onload = () => showSection('dashboard');
-    </script>
 </body>
 </html>
