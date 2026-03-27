@@ -15,14 +15,19 @@
 
         body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: var(--light); color: #333; line-height: 1.6; }
         header {
-    background: black; /* Le fond est maintenant noir uni */
-    color: white; /* Le texte (s'il y en a) reste blanc */
-    padding: 20px; /* Moins de padding vertical pour un look plus compact */
-    text-align: center; /* Pour centrer le logo */
-    display: flex; /* Active Flexbox pour un centrage facile */
-    justify-content: center; /* Centre horizontalement */
-    align-items: center; /* Centre verticalement */
-    height: 120px; /* Définit une hauteur fixe pour le header */
+    background: black;
+    color: white;
+    padding: 20px 0; 
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80px;
+}
+.header-logo {
+    max-height: 60px;
+    width: auto;
+    display: block;
 }
 
 /* Nouveau style pour le logo à l'intérieur du header */
